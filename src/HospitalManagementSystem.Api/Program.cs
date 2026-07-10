@@ -1,4 +1,8 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using HospitalManagementSystem.Application.Interfaces;
+using HospitalManagementSystem.Application.Mappings;
+using HospitalManagementSystem.Application.Validators;
 using HospitalManagementSystem.Infrastructure.Data;
 using HospitalManagementSystem.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +16,12 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<PatientMappingProfile>());
+
+//Keep only this one — it finds ALL validators in the Application assembly
+builder.Services.AddValidatorsFromAssemblyContaining<CreatePatientDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

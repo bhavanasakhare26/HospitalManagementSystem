@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using HospitalManagementSystem.Application.DTOs;
 using HospitalManagementSystem.Application.Interfaces;
 using HospitalManagementSystem.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Api.Controllers;
 
@@ -9,49 +11,55 @@ namespace HospitalManagementSystem.Api.Controllers;
 public class PatientsController : ControllerBase
 {
     private readonly IPatientRepository _patientRepository;
+    private readonly IMapper _mapper;
 
-    public PatientsController(IPatientRepository patientRepository)
+    public PatientsController(IPatientRepository patientRepository, IMapper mapper)
     {
         _patientRepository = patientRepository;
+        _mapper = mapper;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var patients = await _patientRepository.GetAllAsync();
-        if(patients == null || patients.Count() == 0) return NotFound();
-        return Ok(patients);
+        if (patients == null || patients.Count() == 0) return NotFound();
+        var patientDtos = _mapper.Map<List<PatientDto>>(patients);
+        return Ok(patientDtos);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
         var patient = await _patientRepository.GetByIdAsync(id);
-        if(patient == null) return NotFound();
-        return Ok(patient);
+        if (patient == null) return NotFound();
+        var patientDto = _mapper.Map<PatientDto>(patient);
+        return Ok(patientDto);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Patient patient)
+    public async Task<IActionResult> Create([FromBody] CreatePatientDto createPatientDto)
     {
-        if(patient == null) return BadRequest();
+        if(createPatientDto == null) return BadRequest();
+        var patient = _mapper.Map<Patient>(createPatientDto);
         patient.CreatedAt = DateTime.UtcNow;
         await _patientRepository.AddAsync(patient);
-        return CreatedAtAction(nameof(GetById), new {id = patient.Id}, patient);
+        var patientDto = _mapper.Map<PatientDto>(patient);
+        return CreatedAtAction(nameof(GetById), new {id = patientDto.Id}, patientDto);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] Patient patient)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdatePatientDto updatePatientDto)
     {
         var currentPatient = await _patientRepository.GetByIdAsync(id);
         if(currentPatient == null) return NotFound();
 
-        currentPatient.FirstName = patient.FirstName;
-        currentPatient.LastName = patient.LastName;
-        currentPatient.DateOfBirth = patient.DateOfBirth;
-        currentPatient.Gender = patient.Gender;
-        currentPatient.Email = patient.Email;
-        currentPatient.PhoneNumber = patient.PhoneNumber;
+        currentPatient.FirstName = updatePatientDto.FirstName;
+        currentPatient.LastName = updatePatientDto.LastName;
+        currentPatient.DateOfBirth = updatePatientDto.DateOfBirth;
+        currentPatient.Gender = updatePatientDto.Gender;
+        currentPatient.Email = updatePatientDto.Email;
+        currentPatient.PhoneNumber = updatePatientDto.PhoneNumber;
         await _patientRepository.UpdateAsync(currentPatient);
         return NoContent();
     }
