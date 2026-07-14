@@ -16,7 +16,14 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddAutoMapper(cfg => cfg.AddProfile<PatientMappingProfile>());
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<PatientMappingProfile>();
+    cfg.AddProfile<DoctorMappingProfile>();
+    cfg.AddProfile<AppointmentMappingProfile>();
+});
 
 //Keep only this one — it finds ALL validators in the Application assembly
 builder.Services.AddValidatorsFromAssemblyContaining<CreatePatientDtoValidator>();
