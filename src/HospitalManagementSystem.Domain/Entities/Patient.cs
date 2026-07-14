@@ -10,5 +10,7 @@ namespace HospitalManagementSystem.Domain.Entities
         public required string Email { get; set; }
         public required string PhoneNumber { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 }
