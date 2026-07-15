@@ -28,12 +28,12 @@ public class AppointmentRepository : IAppointmentRepository
 
     public async Task<IEnumerable<Appointment>> GetAllAsync()
     {
-        return await _context.Appointments.ToListAsync();
+        return await _context.Appointments.Include(a => a.Patient).Include(a => a.Doctor).ToListAsync();
     }
 
     public async Task<Appointment> GetByIdAsync(int id)
     {
-        return await _context.Appointments.FindAsync(id);
+        return await _context.Appointments.Include(a => a.Patient).Include(a => a.Doctor).FirstOrDefaultAsync(a => a.Id == id);
     }
 
     public async Task UpdateAsync(Appointment appointment)
