@@ -19,15 +19,6 @@ public class AppointmentsController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var appointments = await _appointmentRepository.GetAllAsync();
-        if(appointments == null || appointments.Count() == 0) return NotFound();
-        var appointmentDtos = _mapper.Map<List<AppointmentDto>>(appointments);
-        return Ok(appointmentDtos);
-    }
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -37,6 +28,16 @@ public class AppointmentsController : ControllerBase
         return Ok(appointmentDto);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] int? patientId, [FromQuery] int? doctorId, [FromQuery] int page = 1,[FromQuery] int pageSize = 10, [FromQuery] string? sortBy = null, [FromQuery] bool sortDescending = false)
+    {
+        var appointments = await _appointmentRepository.GetFilteredAsync(patientId, doctorId, page, pageSize, sortBy, sortDescending);
+        if(appointments == null || appointments.Count() == 0) return NotFound();
+        var appointmentDtos = _mapper.Map<List<AppointmentDto>>(appointments);
+        return Ok(appointmentDtos);
+    }
+
+
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateAppointmentDto createAppointmentDto)
     {
@@ -44,7 +45,8 @@ public class AppointmentsController : ControllerBase
         var appointment = _mapper.Map<Appointment>(createAppointmentDto);
         appointment.CreatedAt = DateTime.UtcNow;
         await _appointmentRepository.AddAsync(appointment);
-        var appointmentDto = _mapper.Map<AppointmentDto>(appointment);
+        var newAppointment = await _appointmentRepository.GetByIdAsync(appointment.Id);
+        var appointmentDto = _mapper.Map<AppointmentDto>(newAppointment);
         return CreatedAtAction(nameof(GetById), new { id = appointmentDto.Id}, appointmentDto);
     }
 

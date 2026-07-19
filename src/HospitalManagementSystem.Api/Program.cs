@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using HospitalManagementSystem.Api.Middleware;
 using HospitalManagementSystem.Application.Interfaces;
 using HospitalManagementSystem.Application.Mappings;
 using HospitalManagementSystem.Application.Validators;
@@ -44,6 +45,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthorization();
 
