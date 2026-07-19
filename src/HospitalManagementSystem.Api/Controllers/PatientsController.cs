@@ -2,10 +2,11 @@ using AutoMapper;
 using HospitalManagementSystem.Application.DTOs;
 using HospitalManagementSystem.Application.Interfaces;
 using HospitalManagementSystem.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Api.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PatientsController : ControllerBase
