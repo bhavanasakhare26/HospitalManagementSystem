@@ -23,6 +23,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles="Admin,Receptionist,Doctor")]
     public async Task<IActionResult> GetById(int id)
     {
         var appointment = await _appointmentRepository.GetByIdAsync(id);
@@ -36,6 +37,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles="Admin,Receptionist,Doctor")]
     public async Task<IActionResult> GetAll([FromQuery] int? patientId, [FromQuery] int? doctorId, [FromQuery] int page = 1,[FromQuery] int pageSize = 10, [FromQuery] string? sortBy = null, [FromQuery] bool sortDescending = false)
     {
         var appointments = await _appointmentRepository.GetFilteredAsync(patientId, doctorId, page, pageSize, sortBy, sortDescending);
@@ -50,6 +52,7 @@ public class AppointmentsController : ControllerBase
 
 
     [HttpPost]
+    [Authorize(Roles="Admin,Receptionist")]
     public async Task<IActionResult> Create([FromBody] CreateAppointmentDto createAppointmentDto)
     {
         if(createAppointmentDto == null) return BadRequest();
@@ -63,6 +66,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles="Admin,Receptionist")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateAppointmentDto updateAppointmentDto)
     {
         var appointment = await _appointmentRepository.GetByIdAsync(id);
@@ -82,6 +86,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles="Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var appointment = await _appointmentRepository.GetByIdAsync(id);

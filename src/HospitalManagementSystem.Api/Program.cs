@@ -97,6 +97,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await DbSeeder.SeedAdminAsync(dbContext);
+}
+
 app.MapHealthChecks("/health");
 
 // Configure the HTTP request pipeline.
