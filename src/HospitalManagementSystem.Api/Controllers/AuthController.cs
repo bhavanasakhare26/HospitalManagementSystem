@@ -1,5 +1,6 @@
 using HospitalManagementSystem.Application.DTOs;
 using HospitalManagementSystem.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalManagementSystem.Api.Controllers;
@@ -25,6 +26,7 @@ public class AuthController : ControllerBase
 
 
     [HttpPost("register")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
         var token = await _authService.RegisterAsync(registerDto.Email, registerDto.Password, registerDto.Role);

@@ -23,6 +23,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles="Admin,Receptionist,Doctor")]
     public async Task<IActionResult> GetAll()
     {
         var patients = await _patientRepository.GetAllAsync();
@@ -36,6 +37,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles="Admin,Receptionist,Doctor")]
     public async Task<IActionResult> GetById(int id)
     {
         var patient = await _patientRepository.GetByIdAsync(id);
@@ -50,6 +52,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles="Admin,Receptionist")]
     public async Task<IActionResult> Create([FromBody] CreatePatientDto createPatientDto)
     {
         if(createPatientDto == null) return BadRequest();
@@ -62,6 +65,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles="Admin,Receptionist")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdatePatientDto updatePatientDto)
     {
         var currentPatient = await _patientRepository.GetByIdAsync(id);
@@ -82,6 +86,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles="Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         var patient = await _patientRepository.GetByIdAsync(id);
